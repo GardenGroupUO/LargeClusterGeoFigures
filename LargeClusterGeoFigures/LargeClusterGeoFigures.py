@@ -32,6 +32,7 @@ class LargeClusterGeoFigures_Program:
 		self.focus_plot_with_respect_to_element = focus_plot_with_respect_to_element
 		self.add_legend = add_legend
 
+		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
 
 		self.run()
@@ -57,11 +58,10 @@ class LargeClusterGeoFigures_Program:
 
 	def get_cluster_data(self):
 		clusters_data = []
-		original_path = os.getcwd()
 		for root, dirs, files in os.walk(self.path_to_here):
 			for file in files:
 				if file.endswith('OUTCAR'):
-					name = root.replace(original_path,'')
+					name = root.replace(self.original_path,'')
 					cluster = read(root+'/'+file)
 					clusters_data.append((cluster,name))
 					dirs[:] = []
@@ -161,4 +161,4 @@ class LargeClusterGeoFigures_Program:
 				worksheet.cell(column=index2+4, row=index_aci+2, value=str(percentage))
 				worksheet.cell(column=index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
 		# Save the file
-		workbook.save("LargeClusterGeo_Data_Path"+self.path_to_here.replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)+".xlsx")
+		workbook.save("LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)+".xlsx")
