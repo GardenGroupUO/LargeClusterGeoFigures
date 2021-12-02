@@ -161,4 +161,4 @@ class LargeClusterGeoFigures_Program:
 				worksheet.cell(column=index2+4, row=index_aci+2, value=str(percentage))
 				worksheet.cell(column=index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
 		# Save the file
-		workbook.save("LargeClusterGeo_Data_Path"+path_to_here.replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)+".xlsx")
+		workbook.save("LargeClusterGeo_Data_Path"+self.path_to_here.replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)+".xlsx")
