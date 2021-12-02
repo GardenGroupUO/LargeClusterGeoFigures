@@ -137,28 +137,33 @@ class LargeClusterGeoFigures_Program:
 			return 'None'
 
 		other_namings = [[type_of_NN+': element', type_of_NN+': all', type_of_NN+': percent'] for type_of_NN in self.types_of_NNs]
-		naming = [str(tuple(self.elements))]+list(itertools.chain.from_iterable(other_namings))
+		naming = ['name', str(tuple(self.elements)), 'No of atoms']+list(itertools.chain.from_iterable(other_namings))
 		for index in range(len(naming)):
 			name = naming[index]
 			worksheet.cell(column=index+1, row=1, value=str(name))
 			worksheet.cell(column=index+1, row=1).fill = PatternFill("solid", fgColor=colours[get_colour_name(name)])
 
+		analysed_cluster_information.sort(key=lambda x: (len(x[3]),tuple(value for key, value in sorted(Counter(x[3].get_chemical_symbols()).items()))))
+
 		for index_aci in range(len(analysed_cluster_information)):
 			cluster_name, analysed_element_number_of_neighbours, analysed_all_number_of_neighbours, cluster = analysed_cluster_information[index_aci]
 			worksheet.cell(column=1, row=index_aci+2, value=str(cluster_name))
+			worksheet.cell(column=2, row=index_aci+2, value=str(cluster.get_chemical_formula()))
+			worksheet.cell(column=3, row=index_aci+2, value=str(len(cluster)))
+
 			for index2 in range(len(self.types_of_NNs)):
 				types_of_NN = self.types_of_NNs[index2]
 				element_NN = len(analysed_element_number_of_neighbours[types_of_NN]) if (types_of_NN in analysed_element_number_of_neighbours) else 0
 				all_NN     = len(analysed_all_number_of_neighbours[types_of_NN]) if (types_of_NN in analysed_all_number_of_neighbours) else 0
 
-				worksheet.cell(column=index2+2, row=index_aci+2, value=str(element_NN))
-				worksheet.cell(column=index2+2, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				worksheet.cell(column=3*index2+4, row=index_aci+2, value=str(element_NN))
+				worksheet.cell(column=3*index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
 
-				worksheet.cell(column=index2+3, row=index_aci+2, value=str(all_NN))
-				worksheet.cell(column=index2+3, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				worksheet.cell(column=3*index2+5, row=index_aci+2, value=str(all_NN))
+				worksheet.cell(column=3*index2+5, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
 
 				percentage = (float(element_NN)/float(all_NN))*100.0
-				worksheet.cell(column=index2+4, row=index_aci+2, value=str(percentage))
-				worksheet.cell(column=index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				worksheet.cell(column=3*index2+6, row=index_aci+2, value=str(percentage))
+				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
 		# Save the file
 		workbook.save("LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)+".xlsx")
