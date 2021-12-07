@@ -184,6 +184,9 @@ class LargeClusterGeoFigures_Program:
 			worksheet.title = str(cluster_name)
 			worksheet.cell(row=1, column=1).value = 'r_cut = '
 			worksheet.cell(row=1, column=2).value = str(self.r_cut)
+			worksheet.cell(row=3, column=3).value = 'atom index'
+			worksheet.cell(row=3, column=2).value = worksheet.cell(row=2, column=3).value = 'no of neighbours'
+			worksheet.cell(row=3, column=1).value = worksheet.cell(row=1, column=3).value = 'element'
 			symbols = cluster.get_chemical_symbols()
 			for index1 in range(len(cluster)):
 				worksheet.cell(row=4+index1, column=1).value = worksheet.cell(row=1, column=4+index1).value = str(symbols[index1])
