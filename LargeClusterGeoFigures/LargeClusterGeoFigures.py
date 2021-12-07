@@ -45,6 +45,8 @@ class LargeClusterGeoFigures_Program:
 
 	def run(self):
 		print('--------------------------------------')
+		print('Processing: '+str(self.path_to_here))
+		print('--------------------------------------')
 		print('Getting data from XYZ files')
 		clusters_data = self.get_cluster_data()
 		print('Finished getting data from XYZ files')
@@ -212,4 +214,6 @@ class LargeClusterGeoFigures_Program:
 			with open(workbook_cluster_folder+'/filenames_to_paths.txt','a') as xyz_names_to_path:
 				xyz_names_to_path.write(str(cluster_name)+': '+str(cluster_path)+'\n')
 		# Save the file
+		print('Saving excel file')
 		workbook.save(workbook_name+".xlsx")
+		print('Done saving excel file')
