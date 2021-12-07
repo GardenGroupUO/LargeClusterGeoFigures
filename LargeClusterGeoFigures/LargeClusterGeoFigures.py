@@ -200,9 +200,9 @@ class LargeClusterGeoFigures_Program:
 					if distance <= self.r_cut:
 						no_of_nearest_neighbours_per_atom[index1] += 1
 						no_of_nearest_neighbours_per_atom[index2] += 1
-						worksheet.cell(row=4+index1, column=4+index2).fill = worksheet.cell(row=4+index2, column=4+index1).fill = PatternFill("solid", fgColor='FFC0CB')
-					else:
 						worksheet.cell(row=4+index1, column=4+index2).fill = worksheet.cell(row=4+index2, column=4+index1).fill = PatternFill("solid", fgColor='90EE90')
+					else:
+						worksheet.cell(row=4+index1, column=4+index2).fill = worksheet.cell(row=4+index2, column=4+index1).fill = PatternFill("solid", fgColor='FFC0CB')
 				worksheet.cell(row=4+index1, column=2).value = worksheet.cell(row=2, column=4+index1).value = str(no_of_nearest_neighbours_per_atom[index1])
 			# The number of neighbours on each atom
 			nn_atoms = [nn for index, nn in sorted(no_of_nearest_neighbours_per_atom.items())]
