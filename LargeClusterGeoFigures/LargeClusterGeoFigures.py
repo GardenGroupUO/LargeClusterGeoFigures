@@ -181,7 +181,7 @@ class LargeClusterGeoFigures_Program:
 			name = naming[index]
 			worksheet.cell(column=index+1, row=1, value=str(name))
 			background_colour = self.colours[get_colour_name(name)].replace('#','')
-			worksheet.cell(column=3*index2+4, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
+			worksheet.cell(column=index+1, row=1).font = Font(color=give_black_or_white_writing(background_colour))
 			worksheet.cell(column=index+1, row=1).fill = PatternFill("solid", fgColor=background_colour)
 
 		analysed_cluster_information.sort(key=lambda x: (len(x[3]),tuple(value for key, value in sorted(Counter(x[3].get_chemical_symbols()).items()))))
@@ -197,19 +197,18 @@ class LargeClusterGeoFigures_Program:
 				element_NN = len(analysed_element_number_of_neighbours[types_of_NN]) if (types_of_NN in analysed_element_number_of_neighbours) else 0
 				all_NN     = len(analysed_all_number_of_neighbours[types_of_NN]) if (types_of_NN in analysed_all_number_of_neighbours) else 0
 
+				background_colour = self.colours[get_colour_name(types_of_NN)].replace('#','')
+
 				worksheet.cell(column=3*index2+4, row=index_aci+2, value=str(element_NN))
-				background_colour = self.colours[get_colour_name(element_NN)].replace('#','')
 				worksheet.cell(column=3*index2+4, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
 				worksheet.cell(column=3*index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 
 				worksheet.cell(column=3*index2+5, row=index_aci+2, value=str(all_NN))
-				background_colour = self.colours[get_colour_name(all_NN)].replace('#','')
 				worksheet.cell(column=3*index2+5, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
 				worksheet.cell(column=3*index2+5, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 
 				percentage = (float(element_NN)/float(all_NN))*100.0
 				worksheet.cell(column=3*index2+6, row=index_aci+2, value=str(percentage))
-				background_colour = self.colours[get_colour_name(types_of_NN)].replace('#','')
 				worksheet.cell(column=3*index2+6, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
 				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 		# write distances into excel
