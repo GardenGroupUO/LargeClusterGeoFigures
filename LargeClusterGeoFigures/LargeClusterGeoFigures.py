@@ -31,12 +31,18 @@ def get_distance(distance1,distance2):
 	return distance
 
 class LargeClusterGeoFigures_Program:
-	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_here='.',add_legend=False):
+	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_here='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF'):
 		self.path_to_here = os.path.abspath(path_to_here)
 		self.r_cut = r_cut
 		self.elements = elements
 		self.focus_plot_with_respect_to_element = focus_plot_with_respect_to_element
 		self.add_legend = add_legend
+
+		self.bulk_colour = bulk_colour
+		self.face_colour = face_colour
+		self.vertex_colour = vertex_colour
+		self.edge_colour = edge_colour
+		self.none_colour = none_colour
 
 		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
@@ -133,7 +139,7 @@ class LargeClusterGeoFigures_Program:
 		worksheet.title = 'Info'
 
 		# pink, red, blue, green
-		colours = {'bulk': 'FFC0CB', 'face': 'FF0000', 'edge': 'ADD8E6', 'vertex': '90EE90', 'None': 'FFFFFF'}
+		colours = {'bulk': self.bulk_colour, 'face': self.face_colour, 'edge': self.edge_colour, 'vertex': self.vertex_colour, 'None': self.none_colour}
 		def get_colour_name(name):
 			for colour_name in colours.keys():
 				if colour_name in name:
