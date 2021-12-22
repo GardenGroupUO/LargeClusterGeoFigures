@@ -31,18 +31,24 @@ def get_distance(distance1,distance2):
 	return distance
 
 class LargeClusterGeoFigures_Program:
-	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_here='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF'):
-		self.path_to_here = os.path.abspath(path_to_here)
+	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF'):
+		self.path_to_here = os.path.abspath(path_to_xyz_files)
 		self.r_cut = r_cut
 		self.elements = elements
 		self.focus_plot_with_respect_to_element = focus_plot_with_respect_to_element
 		self.add_legend = add_legend
 
-		self.bulk_colour = bulk_colour
-		self.face_colour = face_colour
-		self.vertex_colour = vertex_colour
-		self.edge_colour = edge_colour
-		self.none_colour = none_colour
+		def rgb_to_hex(rgb):
+			r, g, b = rgb
+			r, g, b = int(r*255.0), int(g*255.0), int(b*255.0)
+			return '#%02x%02x%02x' % (r, g, b)
+
+		self.bulk_colour = (bulk_colour if isinstance(bulk_colour,str) else rgb_to_hex(bulk_colour)).upper() 
+		self.face_colour = (face_colour if isinstance(face_colour,str) else rgb_to_hex(face_colour)).upper() 
+		self.vertex_colour = (vertex_colour if isinstance(vertex_colour,str) else rgb_to_hex(vertex_colour)).upper() 
+		self.edge_colour = (edge_colour if isinstance(edge_colour,str) else rgb_to_hex(edge_colour)).upper() 
+		self.none_colour = (none_colour if isinstance(none_colour,str) else rgb_to_hex(none_colour)).upper() 
+		self.colours = {'bulk': self.bulk_colour, 'face': self.face_colour, 'edge': self.edge_colour, 'vertex': self.vertex_colour, 'None': self.none_colour}
 
 		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
@@ -138,10 +144,33 @@ class LargeClusterGeoFigures_Program:
 		worksheet = workbook.active
 		worksheet.title = 'Info'
 
-		# pink, red, blue, green
-		colours = {'bulk': self.bulk_colour, 'face': self.face_colour, 'edge': self.edge_colour, 'vertex': self.vertex_colour, 'None': self.none_colour}
+		def hex_to_rgb(hex_key):
+			rgb = []
+			for i in (0,2,4):
+				decimal = int(hex_key[i:i+2],16)
+				rgb.append(decimal)
+			return tuple(rgb)
+
+		def give_black_or_white_writing(hex_key):
+			rgb = hex_to_rgb(hex_key)
+			record = []
+			for c in rgb:
+				c = c/255.0
+				if c <= 0.03928:
+					c = c/12.92
+				else:
+					c = ((c+0.055)/1.055) ** 2.4
+				record.append(c)
+			r, g, b = record
+			L = 0.2126*r + 0.7152*g + 0.0722*b
+
+			if L > ((1.05*0.05)**0.5 - 0.05):
+				return '000000'
+			else:
+				return 'FFFFFF'
+
 		def get_colour_name(name):
-			for colour_name in colours.keys():
+			for colour_name in self.colours.keys():
 				if colour_name in name:
 					return colour_name
 			return 'None'
@@ -151,7 +180,9 @@ class LargeClusterGeoFigures_Program:
 		for index in range(len(naming)):
 			name = naming[index]
 			worksheet.cell(column=index+1, row=1, value=str(name))
-			worksheet.cell(column=index+1, row=1).fill = PatternFill("solid", fgColor=colours[get_colour_name(name)])
+			background_colour = self.colours[get_colour_name(name)].replace('#','')
+			worksheet.cell(column=3*index2+4, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
+			worksheet.cell(column=index+1, row=1).fill = PatternFill("solid", fgColor=background_colour)
 
 		analysed_cluster_information.sort(key=lambda x: (len(x[3]),tuple(value for key, value in sorted(Counter(x[3].get_chemical_symbols()).items()))))
 
@@ -167,14 +198,20 @@ class LargeClusterGeoFigures_Program:
 				all_NN     = len(analysed_all_number_of_neighbours[types_of_NN]) if (types_of_NN in analysed_all_number_of_neighbours) else 0
 
 				worksheet.cell(column=3*index2+4, row=index_aci+2, value=str(element_NN))
-				worksheet.cell(column=3*index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				background_colour = self.colours[get_colour_name(element_NN)].replace('#','')
+				worksheet.cell(column=3*index2+4, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
+				worksheet.cell(column=3*index2+4, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 
 				worksheet.cell(column=3*index2+5, row=index_aci+2, value=str(all_NN))
-				worksheet.cell(column=3*index2+5, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				background_colour = self.colours[get_colour_name(all_NN)].replace('#','')
+				worksheet.cell(column=3*index2+5, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
+				worksheet.cell(column=3*index2+5, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 
 				percentage = (float(element_NN)/float(all_NN))*100.0
 				worksheet.cell(column=3*index2+6, row=index_aci+2, value=str(percentage))
-				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(types_of_NN)])
+				background_colour = self.colours[get_colour_name(types_of_NN)].replace('#','')
+				worksheet.cell(column=3*index2+6, row=index_aci+2).font = Font(color=give_black_or_white_writing(background_colour))
+				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 		# write distances into excel
 		print('Writing bond distance data to excel')
 		workbook_name = "LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)
@@ -206,8 +243,10 @@ class LargeClusterGeoFigures_Program:
 					if distance <= self.r_cut:
 						no_of_nearest_neighbours_per_atom[index1] += 1
 						no_of_nearest_neighbours_per_atom[index2] += 1
+						worksheet.cell(row=4+index1, column=4+index2).font = Font(color=give_black_or_white_writing('90EE90'))
 						worksheet.cell(row=4+index1, column=4+index2).fill = worksheet.cell(row=4+index2, column=4+index1).fill = PatternFill("solid", fgColor='90EE90')
 					else:
+						worksheet.cell(row=4+index1, column=4+index2).font = Font(color=give_black_or_white_writing('FFC0CB'))
 						worksheet.cell(row=4+index1, column=4+index2).fill = worksheet.cell(row=4+index2, column=4+index1).fill = PatternFill("solid", fgColor='FFC0CB')
 				worksheet.cell(row=4+index1, column=2).value = worksheet.cell(row=2, column=4+index1).value = str(no_of_nearest_neighbours_per_atom[index1])
 			# The number of neighbours on each atom

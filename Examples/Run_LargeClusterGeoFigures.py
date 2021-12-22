@@ -5,11 +5,11 @@ elements = ['Cu','Pd']
 focus_plot_with_respect_to_element = 'Pd'
 add_legend = False
 
-bulk_colour = 'FFC0CB'
-face_colour = 'FF0000'
-vertex_colour = '90EE90'
-edge_colour = 'ADD8E6'
-none_colour = 'FFFFFF'
+bulk_colour = (251/255.0,180/255.0,185/255.0) #'#FFFFFF'
+face_colour = (247/255.0,104/255.0,161/255.0) #'#FF0000'
+vertex_colour = (197/255.0,27/255.0,138/255.0) #'#90EE90'
+edge_colour = (122/255.0,1/255.0,119/255.0) #'#ADD8E6'
+none_colour = '#FFFFFF'
 
 all_path_to_xyz_files = ['309_ish/clusters_for_paper','147_ish/clusters_for_paper']
 
