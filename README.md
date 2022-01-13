@@ -67,13 +67,32 @@ elements = ['Cu','Pd']
 focus_plot_with_respect_to_element = 'Pd'
 add_legend = False
 
+bulk_colour = (251/255.0,180/255.0,185/255.0) #'#FFFFFF'
+face_colour = (247/255.0,104/255.0,161/255.0) #'#FF0000'
+vertex_colour = (197/255.0,27/255.0,138/255.0) #'#90EE90'
+edge_colour = (122/255.0,1/255.0,119/255.0) #'#ADD8E6'
+none_colour = '#FFFFFF'
+
 all_path_to_xyz_files = ['309_ish/clusters_for_paper','147_ish/clusters_for_paper']
 
+auto_centre = False
+
 for path_to_xyz_files in all_path_to_xyz_files:
-	LargeClusterGeoFigures_Program(r_cut,elements,focus_plot_with_respect_to_element,path_to_xyz_files,add_legend)
+	LargeClusterGeoFigures_Program(r_cut,elements=elements,focus_plot_with_respect_to_element=focus_plot_with_respect_to_element,path_to_xyz_files=path_to_xyz_files,add_legend=add_legend,bulk_colour=bulk_colour,face_colour=face_colour,vertex_colour=vertex_colour,edge_colour=edge_colour,none_colour=none_colour,auto_centre=auto_centre)
 ```
 
-When you execute this program by running ``python3 Run_LargeClusterGeoFigures.py`` in the terminal, LargeClusterGeoFigures will 
+The inputs are:
+* `r_cut`: The distance between atoms to be considered neighbours, synonymous as the maximum bond distance between atoms. Can give this as a number, or a dictionary between the various elements, for example: ```{'Cu': 2.8, 'Pd': 2.9, ('Cu','Pd'): 2.85}```
+* `elements`: The elements that are in your set of clusters.
+* `focus_plot_with_respect_to_element`: The element to focus your plots to plot about.
+* `add_legend`: add a legend to your plots? ```True``` for yes, ```False``` for no.
+* `bulk_colour`: The colour of points symbolising bulk atoms.
+* `face_colour`: The colour of points symbolising face atoms.
+* `vertex_colour`: The colour of points symbolising vertex atoms.
+* `edge_colour`: The colour of points symbolising edge atoms.
+* `none_colour`: The colour given if something weird happens. If you see this colour in any plots, investigate.
+* `path_to_xyz_files`: This is the folder to explore, including subfolders, that contain the clusters you want to look into.
+* `auto_centre`: If you would like to auto center your clusters, including wrapping your cluster if ``VASP`` has made a weird cluster due to the cluster moving over the periodic bound. ``True`` if you want to do this, ``False`` if not. Try using this if the following happens. Default: ``False``. 
 
 ## What will LargeClusterGeoFigures do when you run the ``Run_LargeClusterGeoFigures.py`` script?
 
@@ -98,6 +117,8 @@ The types of atoms that you can have are (with its given tag for cluster_name+'n
 	* edge (tag = 2)
 	* vertex (tag = 3)
 
+When you execute this program by running ``python3 Run_LargeClusterGeoFigures.py`` in the terminal, LargeClusterGeoFigures will make plots that describe the distributions of bulk, face, vertex, and edge sites with respect to `focus_plot_with_respect_to_element`. 
+
 ## Output files that are created by LargeClusterGeoFigures
 
 
@@ -105,6 +126,15 @@ The types of atoms that you can have are (with its given tag for cluster_name+'n
 ## Other useful programs in LargeClusterGeoFigures
 
 
+## Troubleshooting
+
+### What to do if VASP moves atoms across the periodic boundary such that the cluyster becomes split?
+
+First, try setting the `auto_centre` tag to true and run again. Look at the exel spreadsheet that is make and see that:
+* It makes the distributions and bond distances between atoms in those clusters that have this problem make more sense, and
+* Dont mess up any other clusters bond distances and distributions that shouldn't have changed because they dont have this issue. 
+
+If this doesn't work, in the same folder as your cluster's `OUTCAR` and (or) `CONTCAR` write a `xyz` file called `LCGF_look_at.xyz`, where you have made any corrections to this cluster to. LargeClusterGeoFigures will not look at your  `OUTCAR` or `CONTCAR` files and instead only look at this `LCGF_look_at.xyz` file. 
 
 ## About
 

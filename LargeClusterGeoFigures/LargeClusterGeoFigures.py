@@ -31,7 +31,7 @@ def get_distance(distance1,distance2):
 	return distance
 
 class LargeClusterGeoFigures_Program:
-	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF'):
+	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF',auto_centre=False):
 		self.path_to_here = os.path.abspath(path_to_xyz_files)
 		self.r_cut = r_cut
 		self.elements = elements
@@ -49,6 +49,8 @@ class LargeClusterGeoFigures_Program:
 		self.edge_colour = (edge_colour if isinstance(edge_colour,str) else rgb_to_hex(edge_colour)).upper() 
 		self.none_colour = (none_colour if isinstance(none_colour,str) else rgb_to_hex(none_colour)).upper() 
 		self.colours = {'bulk': self.bulk_colour, 'face': self.face_colour, 'edge': self.edge_colour, 'vertex': self.vertex_colour, 'None': self.none_colour}
+
+		self.auto_centre = auto_centre
 
 		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
@@ -76,15 +78,36 @@ class LargeClusterGeoFigures_Program:
 		print('Finished excel spreadsheet')
 		print('--------------------------------------')
 
+	def perform_auto_centre(self,system):
+		def get_middle_of_cell(system):
+			cell = system.get_cell()
+			vec1, vec2, vec3 = cell
+			corners = []
+			for a,b,c in itertools.product((0,1),(0,1),(0,1)):
+				corner_position = a*vec1 + b*vec2 + c*vec3
+				corners.append(corner_position)
+			centre_of_cell = np.array([sum(corners_axis) for corners_axis in zip(*corners)])/len(corners)
+			return centre_of_cell
+		add_to_each_position = get_middle_of_cell(system) - system.get_center_of_mass()
+		system.set_positions(system.get_positions() + add_to_each_position)
+		system.wrap()
+		system.center()
+
 	def get_cluster_data(self):
 		clusters_data = []
 		for root, dirs, files in os.walk(self.path_to_here):
-			for file in files:
-				if file.endswith('OUTCAR'):
-					name = root.replace(self.original_path,'')
-					cluster = read(root+'/'+file)
-					clusters_data.append((cluster,name))
-					dirs[:] = []
+			for file in ['LCGF_look_at.xyz','CONTCAR','OUTCAR']:
+				if file in files:
+					break
+			else:
+				continue
+			name = root.replace(self.original_path,'')
+			cluster = read(root+'/'+file)
+			if self.auto_centre:
+				self.perform_auto_centre(cluster)
+			clusters_data.append((cluster,name))
+			files[:] = []
+			dirs[:] = []
 		clusters_data.sort(key=lambda x:len(x[0]))
 		return clusters_data
 
