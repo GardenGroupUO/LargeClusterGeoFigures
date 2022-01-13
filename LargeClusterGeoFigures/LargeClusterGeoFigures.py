@@ -31,7 +31,7 @@ def get_distance(distance1,distance2):
 	return distance
 
 class LargeClusterGeoFigures_Program:
-	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF',auto_centre=False):
+	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF',auto_centre=False,testing=False):
 		self.path_to_here = os.path.abspath(path_to_xyz_files)
 		self.r_cut = r_cut
 		self.elements = elements
@@ -54,6 +54,8 @@ class LargeClusterGeoFigures_Program:
 
 		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
+
+		testing_name = 'TESTING_' if testing else ''
 
 		self.run()
 
@@ -236,7 +238,7 @@ class LargeClusterGeoFigures_Program:
 				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 		# write distances into excel
 		print('Writing bond distance data to excel')
-		workbook_name = "LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)
+		workbook_name = testing_name+"LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)
 		workbook_cluster_folder = workbook_name+'_clusters'
 		if os.path.exists(workbook_cluster_folder):
 			shutil.rmtree(workbook_cluster_folder)
