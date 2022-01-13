@@ -55,7 +55,7 @@ class LargeClusterGeoFigures_Program:
 		self.original_path = os.getcwd()
 		self.types_of_NNs = ['bulk', 'face', 'edge', 'vertex']
 
-		testing_name = 'TESTING_' if testing else ''
+		self.testing_name = 'TESTING_' if testing else ''
 
 		self.run()
 
@@ -238,7 +238,7 @@ class LargeClusterGeoFigures_Program:
 				worksheet.cell(column=3*index2+6, row=index_aci+2).fill = PatternFill("solid", fgColor=background_colour)
 		# write distances into excel
 		print('Writing bond distance data to excel')
-		workbook_name = testing_name+"LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)
+		workbook_name = self.testing_name+"LargeClusterGeo_Data_Path"+self.path_to_here.replace(self.original_path,'').replace('/','_')+'_focus_element_'+str(self.focus_plot_with_respect_to_element)
 		workbook_cluster_folder = workbook_name+'_clusters'
 		if os.path.exists(workbook_cluster_folder):
 			shutil.rmtree(workbook_cluster_folder)
