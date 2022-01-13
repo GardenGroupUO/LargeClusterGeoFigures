@@ -130,7 +130,7 @@ When you execute this program by running ``python3 Run_LargeClusterGeoFigures.py
 
 ### What to do if VASP moves atoms across the periodic boundary such that the cluyster becomes split?
 
-First, try setting the `auto_centre` tag to true and run again. Look at the exel spreadsheet that is make and see that:
+First, try setting the `auto_centre` tag to `True` and run again. Look at the exel spreadsheet that is make and see that:
 * It makes the distributions and bond distances between atoms in those clusters that have this problem make more sense, and
 * Dont mess up any other clusters bond distances and distributions that shouldn't have changed because they dont have this issue. 
 
