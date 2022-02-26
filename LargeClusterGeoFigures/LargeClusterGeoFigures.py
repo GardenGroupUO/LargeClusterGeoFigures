@@ -20,6 +20,13 @@ from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Align
 
 import itertools
 
+try:
+    from tqdm import tqdm, trange
+    does_tqdm_exist = True
+except ImportError:
+    does_tqdm_exist = False
+
+
 def add_to_dictionary_list(analysed_element_number_of_neighbours,element_type_name,indices):
 	analysed_element_number_of_neighbours[element_type_name] = analysed_element_number_of_neighbours.get(element_type_name,[]) + indices
 
@@ -31,11 +38,12 @@ def get_distance(distance1,distance2):
 	return distance
 
 class LargeClusterGeoFigures_Program:
-	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_xyz_files='.',add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF',auto_centre=False,testing=False):
-		self.path_to_here = os.path.abspath(path_to_xyz_files)
+	def __init__(self, r_cut, elements=['Cu','Pd'],focus_plot_with_respect_to_element='Cu',path_to_files='.',record_all_files=False,add_legend=False,bulk_colour='FFC0CB',face_colour='FF0000',vertex_colour='90EE90',edge_colour='ADD8E6',none_colour='FFFFFF',auto_centre=False,testing=False):
+		self.path_to_here = os.path.abspath(path_to_files)
 		self.r_cut = r_cut
 		self.elements = elements
 		self.focus_plot_with_respect_to_element = focus_plot_with_respect_to_element
+		self.record_all_files = record_all_files
 		self.add_legend = add_legend
 
 		def rgb_to_hex(rgb):
@@ -95,19 +103,40 @@ class LargeClusterGeoFigures_Program:
 		system.wrap()
 		system.center()
 
+	def accepted_filetype(self,file):
+		if file.endswith('.xyz'):
+			return True
+		elif file.endswith('.traj'):
+			return True
+		elif file in ['LCGF_look_at.xyz','CONTCAR','OUTCAR']:
+			return True
+		return False
+
 	def get_cluster_data(self):
 		clusters_data = []
 		for root, dirs, files in os.walk(self.path_to_here):
-			for file in ['LCGF_look_at.xyz','CONTCAR','OUTCAR']:
-				if file in files:
-					break
+			if self.record_all_files:
+				for file in files:
+					if self.accepted_filetype(file):
+						if self.record_all_files:
+							name = file
+						else:
+							name = root.replace(self.original_path,'')
+						cluster = read(root+'/'+file)
+						if self.auto_centre:
+							self.perform_auto_centre(cluster)
+						clusters_data.append((cluster,name))
 			else:
-				continue
-			name = root.replace(self.original_path,'')
-			cluster = read(root+'/'+file)
-			if self.auto_centre:
-				self.perform_auto_centre(cluster)
-			clusters_data.append((cluster,name))
+				for file in ['LCGF_look_at.xyz','CONTCAR','OUTCAR']:
+					if file in files:
+						break
+				else:
+					continue
+				name = root.replace(self.original_path,'')
+				cluster = read(root+'/'+file)
+				if self.auto_centre:
+					self.perform_auto_centre(cluster)
+				clusters_data.append((cluster,name))
 			files[:] = []
 			dirs[:] = []
 		clusters_data.sort(key=lambda x:len(x[0]))
@@ -119,7 +148,11 @@ class LargeClusterGeoFigures_Program:
 
 	def process_NN_1(self, clusters_data):
 		cluster_information = []
-		for cluster, name in clusters_data:
+		if does_tqdm_exist:
+			clusters_data_for_loop = tqdm(clusters_data)
+		else:
+			clusters_data_for_loop = clusters_data
+		for cluster, name in clusters_data_for_loop:
 			nl = No_Of_Neighbours([self.r_cut/2.0]*len(cluster))
 			nl.update(cluster)
 			all_number_of_neighbours = {}
@@ -148,7 +181,11 @@ class LargeClusterGeoFigures_Program:
 
 	def analyse_cluster_data(self,cluster_information):
 		analysed_cluster_information = []
-		for name, element_number_of_neighbours, all_number_of_neighbours, cluster in cluster_information:
+		if does_tqdm_exist:
+			cluster_information_for_loop = tqdm(cluster_information)
+		else:
+			cluster_information_for_loop = cluster_information
+		for name, element_number_of_neighbours, all_number_of_neighbours, cluster in cluster_information_for_loop:
 			# ---------------------------------------------------------------------
 			analysed_element_number_of_neighbours = {}
 			for number_of_neighbours, indices in element_number_of_neighbours.items():
@@ -243,10 +280,20 @@ class LargeClusterGeoFigures_Program:
 		if os.path.exists(workbook_cluster_folder):
 			shutil.rmtree(workbook_cluster_folder)
 		os.makedirs(workbook_cluster_folder)
-		for index_aci in range(len(analysed_cluster_information)):
+		if does_tqdm_exist:
+			range_for_loop = trange(len(analysed_cluster_information))
+		else:
+			range_for_loop = range(len(analysed_cluster_information))
+		for index_aci in range_for_loop:
 			cluster_path, analysed_element_number_of_neighbours, analysed_all_number_of_neighbours, cluster = analysed_cluster_information[index_aci]
-			cluster_name = str(len(cluster))+'_'+str(cluster.get_chemical_formula())+'_'+cluster_path.split('/')[-1]
-			print(str(index_aci+1)+' out of '+str(len(analysed_cluster_information))+' ('+str(cluster_name)+')')
+			if self.record_all_files:
+				cluster_name = cluster_path.replace('.','_') ####### to do
+			else:
+				cluster_name = str(len(cluster))+'_'+str(cluster.get_chemical_formula())+'_'+cluster_path.split('/')[-1]
+			if does_tqdm_exist:
+				range_for_loop.set_description("Processing "+str(cluster_name))
+			else:
+				print(str(index_aci+1)+' out of '+str(len(analysed_cluster_information))+' ('+str(cluster_name)+')')
 			worksheet = workbook.create_sheet()
 			worksheet.title = str(cluster_name)
 			worksheet.cell(row=1, column=1).value = 'r_cut = '

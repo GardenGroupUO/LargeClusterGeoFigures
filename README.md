@@ -73,12 +73,13 @@ vertex_colour = (197/255.0,27/255.0,138/255.0) #'#90EE90'
 edge_colour = (122/255.0,1/255.0,119/255.0) #'#ADD8E6'
 none_colour = '#FFFFFF'
 
-all_path_to_xyz_files = ['309_ish/clusters_for_paper','147_ish/clusters_for_paper']
+all_path_to_files = ['309_ish/clusters_for_paper','147_ish/clusters_for_paper']
+record_all_files = False
 
 auto_centre = False
 
-for path_to_xyz_files in all_path_to_xyz_files:
-	LargeClusterGeoFigures_Program(r_cut,elements=elements,focus_plot_with_respect_to_element=focus_plot_with_respect_to_element,path_to_xyz_files=path_to_xyz_files,add_legend=add_legend,bulk_colour=bulk_colour,face_colour=face_colour,vertex_colour=vertex_colour,edge_colour=edge_colour,none_colour=none_colour,auto_centre=auto_centre)
+for path_to_files in all_path_to_files:
+	LargeClusterGeoFigures_Program(r_cut,elements=elements,focus_plot_with_respect_to_element=focus_plot_with_respect_to_element,path_to_files=path_to_files,record_all_files=record_all_files,add_legend=add_legend,bulk_colour=bulk_colour,face_colour=face_colour,vertex_colour=vertex_colour,edge_colour=edge_colour,none_colour=none_colour,auto_centre=auto_centre)
 ```
 
 The inputs are:
@@ -92,6 +93,7 @@ The inputs are:
 * `edge_colour`: The colour of points symbolising edge atoms.
 * `none_colour`: The colour given if something weird happens. If you see this colour in any plots, investigate.
 * `path_to_xyz_files`: This is the folder to explore, including subfolders, that contain the clusters you want to look into.
+* `record_all_files`: This tag indicates if you want to record data about all the xyz and traj files in subfolders, or just specific files. If you set `record_all_files=True`, all xyz and traj files within subfolders will be analysed and recorded. If you set `record_all_files=False`, ``LargeClusterGeoFigures`` will only look in subfolders for the `'LCGF_look_at.xyz'` file, or if this doesn't exists for the  `'CONTCAR'` file, or if this doesn't exists for the  `'OUTCAR'` file. 
 * `auto_centre`: If you would like to auto center your clusters, including wrapping your cluster if ``VASP`` has made a weird cluster due to the cluster moving over the periodic bound. ``True`` if you want to do this, ``False`` if not. Try using this if the following happens. Default: ``False``. 
 
 ## What will LargeClusterGeoFigures do when you run the ``Run_LargeClusterGeoFigures.py`` script?
