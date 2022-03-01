@@ -15,6 +15,7 @@ all_path_to_files = ['309_ish/clusters_for_paper','147_ish/clusters_for_paper']
 record_all_files = False
 
 auto_centre = False
+record_bond_distance = False
 
 for path_to_files in all_path_to_files:
-	LargeClusterGeoFigures_Program(r_cut,elements=elements,focus_plot_with_respect_to_element=focus_plot_with_respect_to_element,path_to_files=path_to_files,record_all_files=record_all_files,add_legend=add_legend,bulk_colour=bulk_colour,face_colour=face_colour,vertex_colour=vertex_colour,edge_colour=edge_colour,none_colour=none_colour,auto_centre=auto_centre)
+	LargeClusterGeoFigures_Program(r_cut,elements=elements,focus_plot_with_respect_to_element=focus_plot_with_respect_to_element,path_to_files=path_to_files,record_all_files=record_all_files,add_legend=add_legend,bulk_colour=bulk_colour,face_colour=face_colour,vertex_colour=vertex_colour,edge_colour=edge_colour,none_colour=none_colour,auto_centre=auto_centre,record_bond_distance=record_bond_distance)
