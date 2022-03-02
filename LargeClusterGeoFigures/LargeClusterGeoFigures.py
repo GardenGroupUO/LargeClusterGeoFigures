@@ -134,10 +134,11 @@ class LargeClusterGeoFigures_Program:
 
 		# process data
 		print('###############################################################################')
-		for filepath, name in traj_files_to_process:
+		for index in range(len(traj_files_to_process)):
+			filepath, name = traj_files_to_process[index]
 			print('--------------------------------------')
 			excel_name = name+'_processed_data'
-			processing_string = 'Processing: '+str(name)
+			processing_string = 'Processing: '+str(name)+' ('+str(index+1)+'/'+str(len(traj_files_to_process))+')'
 			print(processing_string)
 			cluster_images = read(filepath,index=':')
 			cluster_images_to_process = [(image, image_number) for image, image_number in zip(cluster_images, range(len(cluster_images)))]
